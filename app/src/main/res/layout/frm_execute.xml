@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+
+    tools:context=".Act_execute">
+
+    <Button
+        android:id="@+id/btn_Back"
+        android:layout_width="66dp"
+        android:layout_height="62dp"
+        android:onClick="btn_Back_onClick"
+        android:text="B"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/timeView"
+        android:layout_width="180dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="124dp"
+        android:text="TextView"
+
+        android:textSize="36sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_Start"
+        android:layout_width="233dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="208dp"
+        android:text="Start"
+        android:onClick="btn_Start_onClick"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_Stop"
+        android:layout_width="233dp"
+        android:layout_height="69dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="288dp"
+        android:text="Stop"
+        android:onClick="btn_Stop_onClick"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:layout_width="265dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="472dp"
+        android:text="기록"
+        android:textSize="22dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/view_main"
+        android:layout_width="233dp"
+        android:layout_height="69dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="596dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/recordView"
+        android:layout_width="233dp"
+        android:layout_height="69dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="528dp"
+        android:text=""
+        android:textSize="22dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

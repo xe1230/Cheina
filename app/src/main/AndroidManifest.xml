@@ -11,6 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Chelina"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.actions"
+            android:value=""  />
+<!--        android:resource="@xml/frm_execute"-->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -24,6 +28,8 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+        <activity android:name=".Act_execute"/>
     </application>
 
 </manifest>
