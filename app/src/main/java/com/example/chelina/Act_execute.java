@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,12 +15,22 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class Act_execute extends Activity
 {
-    private Button mStartBtn, mStopBtn;
-    private TextView mTimeTextView, mRecordTextView;
-    private Thread timeThread = null;
-    private Boolean isRunning = true;
+    private Thread      m_Thrtime       = null;
+    private Button      m_BtnStart      = null;
+    private TextView    mTimeTextView   = null;
+    private TextView    m_editRecord = null;
+
+    private Boolean     m_bRunning      = true;
+    private Boolean     m_bStarted      = false;
+    private List<String> m_strRecord     = new ArrayList<>();
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -27,13 +38,10 @@ public class Act_execute extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_execute);
 
-        mStartBtn = (Button) findViewById(R.id.btn_Start);
-        mStopBtn = (Button) findViewById(R.id.btn_Stop);
-//        mRecordBtn = (Button) findViewById(R.id.btn_record);
-//        mPauseBtn = (Button) findViewById(R.id.btn_pause);
+        m_BtnStart = (Button) findViewById(R.id.btn_Start);
         mTimeTextView = (TextView) findViewById(R.id.timeView);
-        mRecordTextView = (TextView) findViewById(R.id.recordView);
-
+        m_editRecord = (TextView) findViewById(R.id.recordView);
+        m_editRecord.setMovementMethod(new ScrollingMovementMethod());
     }
 
 
@@ -46,26 +54,52 @@ public class Act_execute extends Activity
 
     public void btn_Start_onClick(View v)
     {
-        v.setVisibility(View.GONE);
-        mStopBtn.setVisibility(View.VISIBLE);
+        if (!m_bStarted)
+        {
+            m_BtnStart.setText("STOP");
+            m_bStarted = true;
+            m_Thrtime = new Thread(new timeThread());
+            m_Thrtime.start();
+        }
+        else
+        {
+            String strRecord = "";
 
-        timeThread = new Thread(new timeThread());
-        timeThread.start();
+
+            m_BtnStart.setText("START");
+            m_bStarted = false;
+            m_strRecord.add(mTimeTextView.getText().toString());
+
+            for (int nCnt = 0 ; nCnt < m_strRecord.size(); nCnt++)
+            {
+                strRecord += m_strRecord.get(nCnt)+ "\n";
+            }
+
+            m_editRecord.setText(strRecord);
+            m_Thrtime.interrupt();
+        }
     }
 
-    public void btn_Stop_onClick(View v)
+    public void btn_Cancel_onClick(View v)
     {
-        mRecordTextView.setText(mRecordTextView.getText() + mTimeTextView.getText().toString() + "\n");
-        // test
-        String strw3evalue =  mRecordTextView.getText().toString();
-        String stre = mTimeTextView.getText().toString();
-        v.setVisibility(View.GONE);
-//        mRecordBtn.setVisibility(View.GONE);
-        mStartBtn.setVisibility(View.VISIBLE);
-//        mPauseBtn.setVisibility(View.GONE);dsdf
-        mRecordTextView.setText(stre);
-        timeThread.interrupt();
+        String strRecord = "";
+        int nMaxIdx = m_strRecord.size();
+
+        if (nMaxIdx != 0)
+        {
+            m_strRecord.remove(nMaxIdx - 1);
+
+            for (int nCnt = 0 ; nCnt < m_strRecord.size(); nCnt++)
+            {
+                strRecord += m_strRecord.get(nCnt)+ "\n";
+            }
+
+            m_editRecord.setText(strRecord);
+        }
+
+
     }
+
 
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler()
@@ -79,7 +113,8 @@ public class Act_execute extends Activity
             int hour = (msg.arg1 / 100) / 360;
             //1000이 1초 1000*60 은 1분 1000*60*10은 10분 1000*60*60은 한시간
 
-            @SuppressLint("DefaultLocale") String result = String.format("%02d:%02d:%02d:%02d", hour, min, sec, mSec);
+            @SuppressLint("DefaultLocale") String result = String.format("%02d:%02d:%02d", min, sec, mSec);
+
             if (result.equals("00:01:15:00"))
             {
                 Toast.makeText(Act_execute.this, "1분 15초가 지났습니다.", Toast.LENGTH_SHORT).show();
@@ -88,8 +123,6 @@ public class Act_execute extends Activity
             mTimeTextView.setText(result);
         }
     };
-
-
 
     public class timeThread implements Runnable
     {
@@ -100,7 +133,7 @@ public class Act_execute extends Activity
 
             while (true)
             {
-                while (isRunning)
+                while (m_bRunning)
                 { //일시정지를 누르면 멈춤
                     Message msg = new Message();
                     msg.arg1 = i++;
@@ -119,8 +152,8 @@ public class Act_execute extends Activity
                             @Override
                             public void run()
                             {
-                                mTimeTextView.setText("");
-                                mTimeTextView.setText("00:00:00:00");
+//                                mTimeTextView.setText("");
+//                                mTimeTextView.setText("00:00:00:00");
                             }
                         });
                         return; // 인터럽트 받을 경우 return
