@@ -7,10 +7,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -92,6 +94,27 @@ public class Act_execute extends AppCompatActivity
         procesIntent(intent);
     }
 
+    @Override public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+
+        Log.d("onConfigurationChanged" , "onConfigurationChanged");
+
+        if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+        {//세로 전환시
+             Log.d("onConfigurationChanged" , "Configuration.ORIENTATION_PORTRAIT");
+
+            RecordDataRefresh();
+        }
+        else if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        { //가로전환시
+             Log.d("onConfigurationChanged", "Configuration.ORIENTATION_LANDSCAPE");
+        }
+        else
+        {
+
+        }
+    }
 
     private void procesIntent(Intent intent)
     {
@@ -173,6 +196,17 @@ public class Act_execute extends AppCompatActivity
     /* ----------------------------------------------------------------------------- */
     // Controller Event
     /* ----------------------------------------------------------------------------- */
+    private void RecordDataRefresh()
+    {
+        String strRecord = "";
+
+        for (int nCnt = 0 ; nCnt < m_strRecord.size(); nCnt++)
+        {
+            strRecord += m_strRecord.get(nCnt)+ "\n";
+        }
+
+        m_editRecord.setText(strRecord);
+    }
 
     public void btn_Back_onClick(View v)
     {
@@ -201,18 +235,13 @@ public class Act_execute extends AppCompatActivity
         }
         else
         {
-            String strRecord = "";
+
 
             m_BtnStart.setText("START");
             m_bStarted = false;
             m_strRecord.add(mTimeTextView.getText().toString());
 
-            for (int nCnt = 0 ; nCnt < m_strRecord.size(); nCnt++)
-            {
-                strRecord += m_strRecord.get(nCnt)+ "\n";
-            }
-
-            m_editRecord.setText(strRecord);
+            RecordDataRefresh();
             m_Thrtime.interrupt();
         }
     }

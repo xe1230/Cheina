@@ -29,7 +29,10 @@
                 android:value="" />
         </activity>
 
-        <activity android:name=".Act_execute"/>
+        <activity android:name=".Act_execute"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
+
+            />
     </application>
 
 </manifest>
