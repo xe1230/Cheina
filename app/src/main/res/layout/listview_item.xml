@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="40dp"
     android:layout_margin="10dp"
     android:orientation="horizontal">
 
@@ -16,22 +16,29 @@
 
     <!--  리스트뷰 아이템 내용 'Title'  -->
     <TextView
+        android:id="@+id/listitem_tiem"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:gravity="center_vertical"
+        android:text="00:00"
+        android:textSize="20sp" />
+
+    <TextView
         android:id="@+id/listitem_title"
-        android:layout_width="0dp"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
         android:layout_weight="3"
         android:gravity="center_vertical"
         android:text="title"
         android:textSize="20sp" />
-
     <!--  리스트뷰 아이템 이미지 'image'  -->
     <ImageView
         android:id="@+id/listitem_image"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:src="@drawable/dif"
-        />
+        android:src="@drawable/difficult" />
 
 
 </LinearLayout>

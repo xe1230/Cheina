@@ -7,10 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,13 +31,50 @@ import com.example.chelina.Recipe.ListView_Adapter;
 import com.example.chelina.Recipe.ListView_Item;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class Act_execute extends AppCompatActivity
 {
-    //TODO https://jaejong.tistory.com/22 list view 작업
+
     public static final String KEY_SIMPLE_DATA = "data";
+    /* ----------------------------------------------------------------------------- */
+    // Definitions
+    /* ----------------------------------------------------------------------------- */
+
+
+
+    /* ----------------------------------------------------------------------------- */
+    // Enum
+    /* ----------------------------------------------------------------------------- */
+    enum _eDifficult
+    {
+        difficult(0),
+        nomal(1),
+        easy(2);
+
+     //   final private String day;
+        private final int value;
+
+         _eDifficult(int value)
+        {
+            this.value = value;
+        }
+
+
+//        public int getValue() { return value; }
+
+        public static String[] getNames()
+        {
+            _eDifficult[] states = values();
+            String[] names = new String[states.length];
+
+            for (int i = 0; i < states.length; i++) {
+                names[i] = states[i].name();
+            }
+
+            return names;
+        }
+    }
 
     /* ----------------------------------------------------------------------------- */
     // Variable
@@ -46,24 +83,26 @@ public class Act_execute extends AppCompatActivity
     private Thread              m_Thrtime       = null;
     private Button              m_BtnStart      = null;
     private TextView            mTimeTextView   = null;
-    private TextView            m_editRecord    = null;
     private EditText            m_editMemo      = null;
-    private ListView            listView = null;
+    private ListView            listView        = null;
 
+    private InputMethodManager  m_MngInput      = null;
     private Boolean             m_bRunning      = true;
     private Boolean             m_bStarted      = false;
 
-
-    private InputMethodManager  m_MngInput      = null;
     private boolean             m_bMemoClicked  = false;
-    private CRecordData         clsRecordData;
+    private CRecordData         clsRecordData   = null;
     private int                 m_nHapValue     = 0;
-    private List<String>        m_strRecord     = new ArrayList<>();
+
+    private ListView_Adapter m_Adapter = null;
+    private ArrayList<ListView_Item> m_ListViewitems = null;
+    int nDifficultIdx = 0;
+    SQLiteDatabase db;
     /* ----------------------------------------------------------------------------- */
     // Properties Function
     /* ----------------------------------------------------------------------------- */
 
-    ArrayList<ListView_Item> items = null;
+
     /* ----------------------------------------------------------------------------- */
     // InitInstance
     /* ----------------------------------------------------------------------------- */
@@ -77,32 +116,25 @@ public class Act_execute extends AppCompatActivity
 
         m_BtnStart      = (Button) findViewById(R.id.btn_Start);
         mTimeTextView   = (TextView) findViewById(R.id.timeView);
-        m_editRecord    = (TextView) findViewById(R.id.recordView);
+
         m_editMemo      = (EditText) findViewById(R.id.edit_Memo);
 
         listView        = (ListView) findViewById(R.id.lv_Main);
-        items           = new ArrayList<ListView_Item>();
+        m_ListViewitems = new ArrayList<ListView_Item>();
         m_MngInput      = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
 
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>();
-        init_ArrayList(1);
+        m_Adapter = new ListView_Adapter(this, m_ListViewitems);
+        listView.setAdapter(m_Adapter);
 
-        ListView_Adapter mAdapter = new ListView_Adapter(this, items);
-        listView.setAdapter(mAdapter);
 
-//        clsRecordData = (CRecordData) getIntent().getSerializableExtra("clsRecordData");
-//        String resultData = getIntent().getStringExtra("dataKey");
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                // AdapterView - 리스트뷰에 연결한 Adapter, getItemAtPosition(),
-                // Adapter의 메소드 getItem()과 동일한 메소드
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
+            {
                 ListView_Item item = (ListView_Item) adapterView.getItemAtPosition(position);
 
-                // 클릭한 위치의 Item의 title 문자열 반환
-                String title = item.getTitle();
-                // 클릭한 위치의 Item Title 문자열 토스트로 보여주기
-//                Toast.makeText(context, title, Toast.LENGTH_SHORT).show();
+                String title = item.getTime();
             }
         });
 
@@ -116,12 +148,14 @@ public class Act_execute extends AppCompatActivity
             }
         });
 
-        m_editRecord.setMovementMethod(new ScrollingMovementMethod());
         m_BtnStart.setText("start");
 
         Intent intent = getIntent();
         m_nHapValue = intent.getIntExtra("Num1",0) + intent.getIntExtra("Num2",0);
-//        procesIntent(intent);
+
+        db = openOrCreateDatabase("InitDB",MODE_PRIVATE, null);
+
+        CrateTable("InitTbl");
     }
 
 
@@ -129,7 +163,7 @@ public class Act_execute extends AppCompatActivity
 
     /* ----------------------------------------------------------------------------- */
     // Event
-    /* ----------------------------------------------------------------------------- */
+    /* ----------------------------------e------------------------------------------- */
 
 
     @Override public void onConfigurationChanged(Configuration newConfig)
@@ -142,7 +176,7 @@ public class Act_execute extends AppCompatActivity
         {//세로 전환시
             Log.d("onConfigurationChanged" , "Configuration.ORIENTATION_PORTRAIT");
 
-            RecordDataRefresh();
+//            RecordDataRefresh();
         }
         else if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
         { //가로전환시
@@ -165,13 +199,13 @@ public class Act_execute extends AppCompatActivity
             int sec = (msg.arg1 / 100) % 60;
             int min = (msg.arg1 / 100) / 60;
             int hour = (msg.arg1 / 100) / 360;
-            //1000이 1초 1000*60 은 1분 1000*60*10은 10분 1000*60*60은 한시간
+
 
             @SuppressLint("DefaultLocale") String result = String.format("%02d:%02d:%02d", min, sec, mSec);
 
             if (result.equals("00:01:15:00"))
             {
-                Toast.makeText(Act_execute.this, "1분 15초가 지났습니다.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(Act_execute.this, "1분 15초가 지났습니다.", Toast.LENGTH_SHORT).show();
             }
 
             mTimeTextView.setText(result);
@@ -181,21 +215,10 @@ public class Act_execute extends AppCompatActivity
     /* ----------------------------------------------------------------------------- */
     // Private Function
     /* ----------------------------------------------------------------------------- */
-    private void init_ArrayList(int count) {
-        // item을 저장할 List 생성
-
-
-        // Drawable 이미지 리소스 ID 값을 가져오기 위해 Resource객체 생성
-        Resources res = getResources();
-
-        // 함수의 인자로 넘겨준 count 아이템 개수만큼 반복, 아이템 추가
-        for (int i = 0; i < count; i++) {
-            // 이미지리소스 id값을 가져옴, res.getIdentifier("이미지 이름", "리소스 폴더 이름", 현재패키지 이름)
-//            int img_ID = res.getIdentifier("listview_item" + (i % 3), "drawable", getPackageName());
-            int img_ID = res.getIdentifier("dif", "drawable", getPackageName());
-            // item 객체 생성하여 리스트에 추가
-            items.add(new ListView_Item((i + 1) + "번째 아이템", img_ID));
-        }
+    private void AddListViewItem(ListView_Item clsListViewItem)
+    {
+        m_ListViewitems.add(clsListViewItem);
+        m_Adapter.notifyDataSetChanged();
     }
 
 
@@ -216,7 +239,6 @@ public class Act_execute extends AppCompatActivity
 
     private void HideKeyboard()
     {
-//        InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (m_bMemoClicked)
         {
             m_MngInput.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -224,35 +246,21 @@ public class Act_execute extends AppCompatActivity
 
     }
 
-    private void RemoveData(int nMaxIdx)
+    private void CrateTable(String strName)
     {
-        String strRecord = "";
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+strName+"(_id integer PRIMARY KEY AUTOINCREMENT,"
+                +" name text, age int , phone text)");
 
-
-        m_strRecord.remove(nMaxIdx - 1);
-
-        for (int nCnt = 0 ; nCnt < m_strRecord.size(); nCnt++)
-        {
-            strRecord += m_strRecord.get(nCnt)+ "\n";
-        }
-
-        m_editRecord.setText(strRecord);
+        insertRecord(strName);
     }
 
-
-
-    private void RecordDataRefresh()
+    public void insertRecord(String name)
     {
-        String strRecord = "";
+        db.execSQL("INSERT INTO "+name+"(name, age, phone) VAlUES('정연',26,'010-1000-1000')");
+        db.execSQL("INSERT INTO "+name+"(name, age, phone) VAlUES('모모',26,'010-2000-2000')");
+        db.execSQL("INSERT INTO "+name+"(name, age, phone) VAlUES('채영',23,'010-3000-3000')");
 
-        for (int nCnt = 0 ; nCnt < m_strRecord.size(); nCnt++)
-        {
-            strRecord += m_strRecord.get(nCnt)+ "\n";
-        }
-
-        m_editRecord.setText(strRecord);
     }
-
     /* ----------------------------------------------------------------------------- */
     // Protected Function
     /* ----------------------------------------------------------------------------- */
@@ -282,6 +290,7 @@ public class Act_execute extends AppCompatActivity
         m_bMemoClicked = true;
     }
 
+
     public void btn_Start_onClick(View v)
     {
         if (!m_bStarted)
@@ -297,41 +306,48 @@ public class Act_execute extends AppCompatActivity
 
             m_BtnStart.setText("START");
             m_bStarted = false;
-            m_strRecord.add(mTimeTextView.getText().toString());
+
             final EditText edittext = new EditText(this);
-            final String[] strItems = new String[] { "Difficult", "Nomal", "Easy"};
+            final String[] strItems = _eDifficult.getNames();
 
             AlertDialog.Builder dlg = new AlertDialog.Builder(Act_execute.this).setCancelable(false);
             dlg.setTitle("Check Level");
             dlg.setView(edittext);
-            dlg.setSingleChoiceItems( strItems,0,
+            dlg.setSingleChoiceItems( strItems,nDifficultIdx,
                     new DialogInterface.OnClickListener()
                     {
                         public void onClick(DialogInterface dialog, int which)
                         {
+                            nDifficultIdx = which;
                             Toast.makeText(getApplicationContext(),"" + strItems[which],Toast.LENGTH_SHORT).show();
                         }
                     });
 
 
             dlg.setNegativeButton("닫기",null);
-            dlg.setPositiveButton("저장",new DialogInterface.OnClickListener(){
+            dlg.setPositiveButton("저장",new DialogInterface.OnClickListener()
+            {
                 @Override
                 public void onClick(DialogInterface dialog, int pos)
                 {
-//                    RemoveData(nMaxIdx);
+                    String          strValue        = edittext.getText().toString();
+                    Resources       res             = getResources();
+                    _eDifficult[]   eDifficult      = _eDifficult.values();
+                    int             nImgID          = res.getIdentifier(eDifficult[nDifficultIdx].toString(), "drawable", getPackageName());
+                    ListView_Item clsListViewItem   = new ListView_Item(mTimeTextView.getText().toString(), strValue, nImgID);
+                    AddListViewItem(clsListViewItem);
                 }
             });
+
             dlg.show();
 
-            RecordDataRefresh();
         }
     }
 
 
     public void btn_Cancel_onClick(View v)
     {
-        int nMaxIdx = m_strRecord.size();
+        int nMaxIdx = m_ListViewitems.size();
 
         if (nMaxIdx != 0)
         {
@@ -343,7 +359,10 @@ public class Act_execute extends AppCompatActivity
                 @Override
                 public void onClick(DialogInterface dialog, int pos)
                 {
-                    RemoveData(nMaxIdx);
+                    m_ListViewitems.remove(nMaxIdx - 1);
+
+//                    listview.clearChoices();
+                    m_Adapter.notifyDataSetChanged();
                 }
             });
 

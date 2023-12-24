@@ -47,16 +47,16 @@ public class ListView_Adapter extends BaseAdapter
         LayoutInflater  layoutInflater  = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View            view            = layoutInflater.inflate(R.layout.listview_item, parent, false);
         TextView        number          = view.findViewById(R.id.listitem_number);
-        TextView        title           = view.findViewById(R.id.listitem_title);
+        TextView        Time           = view.findViewById(R.id.listitem_tiem);
+        TextView        edit_Reference  = view.findViewById(R.id.listitem_title);
         ImageView       image           = view.findViewById(R.id.listitem_image);
 
-        // ListView의 Item을 구성하는 뷰 세팅
         ListView_Item item = m_items.get(position);
         number.setText(String.valueOf(position+1));		// 해당위치 +1 설정, 배열순으로 0부터 시작
-        title.setText(item.getTitle());					// item 객체 내용을 가져와 세팅
+        Time.setText(item.getTime());
+        edit_Reference.setText(item.getReference());
         image.setImageResource(item.getImage());		// item 객체 내용을 가져와 세팅
 
-        // 설정한 view를 반환해줘야 함
         return view;
     }
 }

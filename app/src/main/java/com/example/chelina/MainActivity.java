@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
         if (nResultCode == RESULT_OK)
         {
             int nHap = inteData.getIntExtra("Hap",0);
-            Toast.makeText(getApplicationContext(),"" + nHap,Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(),"" + nHap,Toast.LENGTH_SHORT).show();
         }
 
     }

@@ -2,20 +2,29 @@ package com.example.chelina.Recipe;
 
 public class ListView_Item
 {
-    private String m_strTitle;
+    private String m_strTime;
+    private String m_strReference;
     private int m_nImgIdx;
 
-    public ListView_Item(String strTitle, int nImgIdx)
+    public ListView_Item(String strTime, String strTitle, int nImgIdx)
     {
-        this.m_strTitle = strTitle;
-        this.m_nImgIdx = nImgIdx;
+        this.m_strTime          = strTime;
+        this.m_strReference     = strTitle;
+        this.m_nImgIdx          = nImgIdx;
     }
 
-    public String getTitle() {
-        return m_strTitle;
+
+    public String getTime() {
+        return m_strTime;
     }
 
-    public int getImage() {
+    public String getReference()
+    {
+        return m_strReference;
+    }
+
+    public int getImage()
+    {
         return m_nImgIdx;
     }
 }
