@@ -36,12 +36,13 @@ import java.util.ArrayList;
 public class Act_execute extends AppCompatActivity
 {
 
-    public static final String KEY_SIMPLE_DATA = "data";
+
     /* ----------------------------------------------------------------------------- */
     // Definitions
     /* ----------------------------------------------------------------------------- */
-
-
+    public static final String KEY_SIMPLE_DATA = "data";
+    private static final String DEF_DB_NAEM = "ChelinaDB";
+    private static final String DEF_DB_TABLE_NAME = "Interval_tbl";
 
     /* ----------------------------------------------------------------------------- */
     // Enum
@@ -83,7 +84,7 @@ public class Act_execute extends AppCompatActivity
     private Thread              m_Thrtime       = null;
     private Button              m_BtnStart      = null;
     private TextView            mTimeTextView   = null;
-    private EditText            m_editMemo      = null;
+    private EditText m_editTitle = null;
     private ListView            listView        = null;
 
     private InputMethodManager  m_MngInput      = null;
@@ -114,18 +115,25 @@ public class Act_execute extends AppCompatActivity
 
         ConstraintLayout myLayout = (ConstraintLayout)findViewById(R.id.Clo_Main);
 
-        m_BtnStart      = (Button) findViewById(R.id.btn_Start);
-        mTimeTextView   = (TextView) findViewById(R.id.timeView);
-
-        m_editMemo      = (EditText) findViewById(R.id.edit_Memo);
-
-        listView        = (ListView) findViewById(R.id.lv_Main);
-        m_ListViewitems = new ArrayList<ListView_Item>();
-        m_MngInput      = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        m_BtnStart          = (Button) findViewById(R.id.btn_Start);
+        mTimeTextView       = (TextView) findViewById(R.id.timeView);
+        m_editTitle         = (EditText) findViewById(R.id.edit_Title);
+        listView            = (ListView) findViewById(R.id.lv_Main);
+        m_ListViewitems     = new ArrayList<ListView_Item>();
+        m_MngInput          = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
 
         m_Adapter = new ListView_Adapter(this, m_ListViewitems);
         listView.setAdapter(m_Adapter);
 
+        myLayout.setOnTouchListener(new ConstraintLayout.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                HideKeyboard();
+                return false;
+            }
+        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -138,13 +146,21 @@ public class Act_execute extends AppCompatActivity
             }
         });
 
-        myLayout.setOnTouchListener(new ConstraintLayout.OnTouchListener()
-        {
+
+
+        m_editTitle.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event)
+            public void onFocusChange(View view, boolean hasFocus)
             {
-                HideKeyboard();
-                return false;
+                if (hasFocus)
+                {
+                    m_bMemoClicked = true;
+                    m_MngInput.showSoftInput(m_editTitle, InputMethodManager.SHOW_IMPLICIT);
+                }
+                else
+                {
+
+                }
             }
         });
 
@@ -153,9 +169,9 @@ public class Act_execute extends AppCompatActivity
         Intent intent = getIntent();
         m_nHapValue = intent.getIntExtra("Num1",0) + intent.getIntExtra("Num2",0);
 
-        db = openOrCreateDatabase("InitDB",MODE_PRIVATE, null);
+        db = openOrCreateDatabase(DEF_DB_NAEM, MODE_PRIVATE,null);
 
-        CrateTable("InitTbl");
+        CrateTable(DEF_DB_TABLE_NAME);
     }
 
 
@@ -231,7 +247,7 @@ public class Act_execute extends AppCompatActivity
 
             if (intent != null)
             {
-                m_editMemo.setText(data.message);
+                m_editTitle.setText(data.message);
 
             }
         }
@@ -239,27 +255,31 @@ public class Act_execute extends AppCompatActivity
 
     private void HideKeyboard()
     {
+
         if (m_bMemoClicked)
         {
+
             m_MngInput.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            this.getWindow().getDecorView().clearFocus();
+            m_bMemoClicked = false;
         }
 
     }
 
     private void CrateTable(String strName)
     {
-        db.execSQL("CREATE TABLE IF NOT EXISTS "+strName+"(_id integer PRIMARY KEY AUTOINCREMENT,"
-                +" name text, age int , phone text)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+ strName +"(_id integer PRIMARY KEY AUTOINCREMENT, time_txt text, reference_txt text, ImageIdx_n int, Titel_text text)");
 
-        insertRecord(strName);
     }
 
-    public void insertRecord(String name)
+    public void InsertDB(ListView_Item clsListViewItem, String strTitle)
     {
-        db.execSQL("INSERT INTO "+name+"(name, age, phone) VAlUES('정연',26,'010-1000-1000')");
-        db.execSQL("INSERT INTO "+name+"(name, age, phone) VAlUES('모모',26,'010-2000-2000')");
-        db.execSQL("INSERT INTO "+name+"(name, age, phone) VAlUES('채영',23,'010-3000-3000')");
+        String strQuery = "";
 
+        strQuery = "INSERT INTO "+DEF_DB_TABLE_NAME+"(time_txt, reference_txt, ImageIdx_n, Titel_text) " +
+                "VAlUES('" + clsListViewItem.getTime() + "','" + clsListViewItem.getReference() + "', " + clsListViewItem.getImageIdx() + " , '"+strTitle + "')";
+
+        db.execSQL(strQuery);
     }
     /* ----------------------------------------------------------------------------- */
     // Protected Function
@@ -283,13 +303,6 @@ public class Act_execute extends AppCompatActivity
         setResult(RESULT_OK,intent);
         finish();
     }
-
-    public void edit_Memo_onClick(View v)
-    {
-        m_MngInput.showSoftInput(m_editMemo, InputMethodManager.SHOW_IMPLICIT);
-        m_bMemoClicked = true;
-    }
-
 
     public void btn_Start_onClick(View v)
     {
@@ -319,7 +332,7 @@ public class Act_execute extends AppCompatActivity
                         public void onClick(DialogInterface dialog, int which)
                         {
                             nDifficultIdx = which;
-                            Toast.makeText(getApplicationContext(),"" + strItems[which],Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getApplicationContext(),"" + strItems[which],Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -330,12 +343,17 @@ public class Act_execute extends AppCompatActivity
                 @Override
                 public void onClick(DialogInterface dialog, int pos)
                 {
-                    String          strValue        = edittext.getText().toString();
                     Resources       res             = getResources();
                     _eDifficult[]   eDifficult      = _eDifficult.values();
+                    String          strTime         = mTimeTextView.getText().toString();
+                    String          strRefer        = edittext.getText().toString();
                     int             nImgID          = res.getIdentifier(eDifficult[nDifficultIdx].toString(), "drawable", getPackageName());
-                    ListView_Item clsListViewItem   = new ListView_Item(mTimeTextView.getText().toString(), strValue, nImgID);
+                    ListView_Item clsListViewItem   = new ListView_Item(strTime, strRefer, nImgID, nDifficultIdx);
+
                     AddListViewItem(clsListViewItem);
+                    InsertDB(clsListViewItem, m_editTitle.getText().toString());
+
+                    HideKeyboard();
                 }
             });
 
