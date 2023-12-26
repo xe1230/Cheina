@@ -11,10 +11,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Chelina"
         tools:targetApi="31">
+        <activity
+            android:name=".Act_SelectionCourse"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
         <meta-data
             android:name="com.google.android.actions"
-            android:value=""  />
-<!--        android:resource="@xml/frm_execute"-->
+            android:value="" /> <!-- android:resource="@xml/frm_execute" -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -28,15 +35,9 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
-        <activity android:name=".Act_execute"
-            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
-
-            />
+        <activity
+            android:name=".Act_execute"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden" />
     </application>
 
 </manifest>
-
-<!--  TODO: 1.MVC 이용 데이터 보안
-            2.Note 기능 추가
-            3. DB 사용-->

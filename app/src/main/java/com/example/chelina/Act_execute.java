@@ -20,9 +20,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -85,7 +85,7 @@ public class Act_execute extends AppCompatActivity
     private Button              m_BtnStart      = null;
     private TextView            mTimeTextView   = null;
     private EditText m_editTitle = null;
-    private ListView            listView        = null;
+    private ListView m_listView = null;
 
     private InputMethodManager  m_MngInput      = null;
     private Boolean             m_bRunning      = true;
@@ -112,18 +112,21 @@ public class Act_execute extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_execute);
-
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
         ConstraintLayout myLayout = (ConstraintLayout)findViewById(R.id.Clo_Main);
 
         m_BtnStart          = (Button) findViewById(R.id.btn_Start);
         mTimeTextView       = (TextView) findViewById(R.id.timeView);
         m_editTitle         = (EditText) findViewById(R.id.edit_Title);
-        listView            = (ListView) findViewById(R.id.lv_Main);
+        m_listView          = (ListView) findViewById(R.id.lv_Main);
         m_ListViewitems     = new ArrayList<ListView_Item>();
         m_MngInput          = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
 
         m_Adapter = new ListView_Adapter(this, m_ListViewitems);
-        listView.setAdapter(m_Adapter);
+        m_listView.setAdapter(m_Adapter);
+        m_listView.setSelection(m_Adapter.getCount() - 1);
+
 
         myLayout.setOnTouchListener(new ConstraintLayout.OnTouchListener()
         {
@@ -135,7 +138,7 @@ public class Act_execute extends AppCompatActivity
             }
         });
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        m_listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
@@ -145,8 +148,6 @@ public class Act_execute extends AppCompatActivity
                 String title = item.getTime();
             }
         });
-
-
 
         m_editTitle.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -343,7 +344,7 @@ public class Act_execute extends AppCompatActivity
                     });
 
 
-            dlg.setNegativeButton("닫기",null);
+            dlg.setNeutralButton("닫기",null);
             dlg.setPositiveButton("저장",new DialogInterface.OnClickListener()
             {
                 @Override

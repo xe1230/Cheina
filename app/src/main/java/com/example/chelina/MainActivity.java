@@ -1,5 +1,6 @@
 package com.example.chelina;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -22,7 +23,9 @@ public class MainActivity extends AppCompatActivity
     /* ----------------------------------------------------------------------------- */
     // Variable
     /* ----------------------------------------------------------------------------- */
-    private Button      m_btnOpenNew    = null;
+    private Button      m_btnCourse     = null;
+    private Button      m_btnExcute     = null;
+
     private Button      m_btnFileWrite  = null;
     private TextView    m_editRecord    = null;
     private Button      m_btnBlog       = null;
@@ -38,8 +41,10 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
 
-        m_btnOpenNew = (Button) findViewById(R.id.btn_openExecute);
+        m_btnExcute = (Button) findViewById(R.id.btn_openExecute);
         m_btnFileWrite = (Button) findViewById(R.id.btn_FileWrite);
         m_editRecord = (TextView) findViewById(R.id.edit_moto);
         m_btnBlog = (Button) findViewById(R.id.btn_Blog);
@@ -98,6 +103,18 @@ public class MainActivity extends AppCompatActivity
     /* ----------------------------------------------------------------------------- */
     // Controller Event
     /* ----------------------------------------------------------------------------- */
+    public void btn_openCourse_onClick(View view)
+    {
+        Intent intent = new Intent(getApplicationContext(),Act_SelectionCourse.class);
+//        CRecordData data = new CRecordData(100, m_editRecord.getText().toString());
+//        intent.putExtra("data", data);
+//        startActivityForResult(intent, REQUEST_CODE_MENU);
+        startActivityForResult(intent, 1);
+    }
+
+
+
+
     public void btn_Excure_onClick(View view)
     {
         Intent intent = new Intent(getApplicationContext(),Act_execute.class);

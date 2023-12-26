@@ -59,4 +59,5 @@ public class ListView_Adapter extends BaseAdapter
 
         return view;
     }
+
 }
