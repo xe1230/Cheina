@@ -214,10 +214,11 @@ public class Act_execute extends AppCompatActivity
             int mSec = msg.arg1 % 100;
             int sec = (msg.arg1 / 100) % 60;
             int min = (msg.arg1 / 100) / 60;
-            int hour = (msg.arg1 / 100) / 360;
+//            int hour = (msg.arg1 / 100) / 360;
 
 
-            @SuppressLint("DefaultLocale") String result = String.format("%02d:%02d:%02d", min, sec, mSec);
+            @SuppressLint("DefaultLocale")
+            String result = String.format("%02d:%02d.%02d", min, sec, mSec);
 
             if (result.equals("00:01:15:00"))
             {
@@ -268,16 +269,24 @@ public class Act_execute extends AppCompatActivity
 
     private void CrateTable(String strName)
     {
-        db.execSQL("CREATE TABLE IF NOT EXISTS "+ strName +"(_id integer PRIMARY KEY AUTOINCREMENT, time_txt text, reference_txt text, ImageIdx_n int, Titel_text text)");
-
+        db.execSQL("CREATE TABLE IF NOT EXISTS "+ strName +"(_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text)");
     }
 
     public void InsertDB(ListView_Item clsListViewItem, String strTitle)
     {
         String strQuery = "";
 
-        strQuery = "INSERT INTO "+DEF_DB_TABLE_NAME+"(time_txt, reference_txt, ImageIdx_n, Titel_text) " +
+        strQuery = "INSERT INTO "+DEF_DB_TABLE_NAME+"(record_time, reference_txt, ImageIdx_n, Titel_text) " +
                 "VAlUES('" + clsListViewItem.getTime() + "','" + clsListViewItem.getReference() + "', " + clsListViewItem.getImageIdx() + " , '"+strTitle + "')";
+
+        db.execSQL(strQuery);
+    }
+
+    public void DeleteDB()
+    {
+        String strQuery = "";
+
+        strQuery = "DELETE FROM Interval_tbl WHERE ROWID IN (SELECT ROWID FROM Interval_tbl ORDER BY ROWID DESC LIMIT 1)";
 
         db.execSQL(strQuery);
     }
@@ -296,9 +305,6 @@ public class Act_execute extends AppCompatActivity
     {
         Intent intent = new Intent(getApplicationContext(),MainActivity.class);
 
-//        CRecordData data = new CRecordData(100, m_editMemo.getText().toString());
-//        intent.putExtra("data", data);
-//        startActivityForResult(intent, 101);
         intent.putExtra("Hap", m_nHapValue);
         setResult(RESULT_OK,intent);
         finish();
@@ -379,8 +385,8 @@ public class Act_execute extends AppCompatActivity
                 {
                     m_ListViewitems.remove(nMaxIdx - 1);
 
-//                    listview.clearChoices();
                     m_Adapter.notifyDataSetChanged();
+                    DeleteDB();
                 }
             });
 
