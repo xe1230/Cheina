@@ -16,30 +16,31 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/delete"
+        android:id="@+id/btn_Add"
         android:layout_width="130dp"
         android:layout_height="60dp"
         android:layout_marginTop="484dp"
+        android:onClick="btn_Add_onClick"
         android:text="Add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/btn_Modify"
         android:layout_width="130dp"
         android:layout_height="60dp"
         android:layout_marginStart="140dp"
         android:layout_marginTop="484dp"
-        android:text="Delete"
+        android:text="Modify"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/btn_Delete"
         android:layout_width="130dp"
         android:layout_height="60dp"
         android:layout_marginTop="484dp"
-        android:text="Button"
+        android:text="Delete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -22,10 +22,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.chelina.DataBase.CConfigulation;
 import com.example.chelina.Recipe.CRecordData;
 import com.example.chelina.Recipe.ListView_Adapter;
 import com.example.chelina.Recipe.ListView_Item;
@@ -40,9 +40,9 @@ public class Act_execute extends AppCompatActivity
     /* ----------------------------------------------------------------------------- */
     // Definitions
     /* ----------------------------------------------------------------------------- */
-    public static final String KEY_SIMPLE_DATA = "data";
-    private static final String DEF_DB_NAEM = "ChelinaDB";
-    private static final String DEF_DB_TABLE_NAME = "Interval_tbl";
+//    public static final String KEY_SIMPLE_DATA = "data";
+//    private static final String DEF_DB_NAEM = "ChelinaDB";
+//    private static final String DEF_DB_TABLE_NAME = "Interval_tbl";
 
     /* ----------------------------------------------------------------------------- */
     // Enum
@@ -97,8 +97,8 @@ public class Act_execute extends AppCompatActivity
 
     private ListView_Adapter m_Adapter = null;
     private ArrayList<ListView_Item> m_ListViewitems = null;
-    int nDifficultIdx = 0;
-    SQLiteDatabase db;
+    private int             nDifficultIdx = 0;
+    private SQLiteDatabase  m_db;
     /* ----------------------------------------------------------------------------- */
     // Properties Function
     /* ----------------------------------------------------------------------------- */
@@ -112,8 +112,8 @@ public class Act_execute extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frm_execute);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        getSupportActionBar().hide();
+
         ConstraintLayout myLayout = (ConstraintLayout)findViewById(R.id.Clo_Main);
 
         m_BtnStart          = (Button) findViewById(R.id.btn_Start);
@@ -170,9 +170,9 @@ public class Act_execute extends AppCompatActivity
         Intent intent = getIntent();
         m_nHapValue = intent.getIntExtra("Num1",0) + intent.getIntExtra("Num2",0);
 
-        db = openOrCreateDatabase(DEF_DB_NAEM, MODE_PRIVATE,null);
+//        m_db = openOrCreateDatabase(CConfigulation.DEF_DATABATE_NAME, MODE_PRIVATE,null);
 
-        CrateTable(DEF_DB_TABLE_NAME);
+//        CrateTable(CConfigulation.strTableName);
     }
 
 
@@ -240,21 +240,6 @@ public class Act_execute extends AppCompatActivity
     }
 
 
-    private void procesIntent(Intent intent)
-    {
-        if (intent != null)
-        {
-            Bundle bundle       = intent.getExtras();
-            CRecordData data    = bundle.getParcelable(KEY_SIMPLE_DATA);
-
-            if (intent != null)
-            {
-                m_editTitle.setText(data.message);
-
-            }
-        }
-    }
-
     private void HideKeyboard()
     {
 
@@ -270,26 +255,26 @@ public class Act_execute extends AppCompatActivity
 
     private void CrateTable(String strName)
     {
-        db.execSQL("CREATE TABLE IF NOT EXISTS "+ strName +"(_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text)");
+        m_db.execSQL("CREATE TABLE IF NOT EXISTS "+ strName +"(_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text)");
     }
 
     public void InsertDB(ListView_Item clsListViewItem, String strTitle)
     {
         String strQuery = "";
 
-        strQuery = "INSERT INTO "+DEF_DB_TABLE_NAME+"(record_time, reference_txt, ImageIdx_n, Titel_text) " +
-                "VAlUES('" + clsListViewItem.getTime() + "','" + clsListViewItem.getReference() + "', " + clsListViewItem.getImageIdx() + " , '"+strTitle + "')";
+//        strQuery = "INSERT INTO " + CConfigulation.strTableName + "(record_time, reference_txt, ImageIdx_n, Titel_text) " +
+//                "VAlUES('" + clsListViewItem.getTime() + "','" + clsListViewItem.getReference() + "', " + clsListViewItem.getImageIdx() + " , '"+strTitle + "')";
 
-        db.execSQL(strQuery);
+//        m_db.execSQL(strQuery);
     }
 
     public void DeleteDB()
     {
         String strQuery = "";
 
-        strQuery = "DELETE FROM Interval_tbl WHERE ROWID IN (SELECT ROWID FROM Interval_tbl ORDER BY ROWID DESC LIMIT 1)";
+//        strQuery = "DELETE FROM " + CConfigulation.strTableName + " WHERE ROWID IN (SELECT ROWID FROM Interval_tbl ORDER BY ROWID DESC LIMIT 1)";
 
-        db.execSQL(strQuery);
+//        m_db.execSQL(strQuery);
     }
     /* ----------------------------------------------------------------------------- */
     // Protected Function
@@ -330,7 +315,7 @@ public class Act_execute extends AppCompatActivity
             final EditText edittext = new EditText(this);
             final String[] strItems = _eDifficult.getNames();
 
-            AlertDialog.Builder dlg = new AlertDialog.Builder(Act_execute.this).setCancelable(false);
+            AlertDialog.Builder dlg = new AlertDialog.Builder(this).setCancelable(false);
             dlg.setTitle("Check Level");
             dlg.setView(edittext);
             dlg.setSingleChoiceItems( strItems,nDifficultIdx,

@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.chelina.DataBase.CDataBaseSystem;
 import com.example.chelina.Recipe.CRecordData;
 
 import java.io.FileInputStream;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity
         m_editRecord = (TextView) findViewById(R.id.edit_moto);
         m_btnBlog = (Button) findViewById(R.id.btn_Blog);
 
+        CDataBaseSystem.Instance().Initialize(this);
 //        Intent intent = getIntent();
 //        procesIntent(intent);
 
