@@ -32,7 +32,6 @@ public class Act_SelectionCourse extends AppCompatActivity
 
         m_listView = findViewById(R.id.list_view);
 
-
         m_listView.setChoiceMode(m_listView.CHOICE_MODE_SINGLE);
 
         m_adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, m_list_str);

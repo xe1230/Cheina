@@ -6,6 +6,9 @@
 <data-extraction-rules>
     <cloud-backup>
         <!-- TODO: Use <include> and <exclude> to control what is backed up.
+                  Complete Database singlton
+                  TCP IP ,
+                  Json
         <include .../>
 
         <exclude .../>

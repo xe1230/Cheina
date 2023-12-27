@@ -24,9 +24,9 @@ public class CDataBaseSystem
 
     private String          m_strTableName = "Chelina_tbl";
 
-    private SQLiteDatabase  m_db;
-    private CDBHelper       m_clsDBHelper;
-    private boolean         m_bInstance = false;
+    private SQLiteDatabase  m_db            = null;
+    private CDBHelper       m_clsDBHelper   = null;
+    private boolean         m_bInstance     = false;
 
     private CDataBaseSystem()
     {
