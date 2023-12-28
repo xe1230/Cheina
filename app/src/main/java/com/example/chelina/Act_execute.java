@@ -315,7 +315,7 @@ public class Act_execute extends AppCompatActivity
 
         editText.setText(strText);
 
-        dlg.setTitle("Check Level");
+        dlg.setTitle(strTitle);
         dlg.setView(editText);
         dlg.setSingleChoiceItems(strItems, nDifficultImgIdx,
                 new DialogInterface.OnClickListener()
