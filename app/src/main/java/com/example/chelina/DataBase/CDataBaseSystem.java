@@ -10,7 +10,7 @@ import com.example.chelina.Recipe.ListView_Item;
 public class CDataBaseSystem
 {
     public static final String  DEF_DATABATE_NAME = "Chelina_DB";
-    private static final String DEF_STR_CreatedQuery = "(_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+    private static final String DEF_STR_CreatedQuery = "(_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text, reg_date TIMESTAMP DEFAULT (DATETIME('now','localtime')))";
 
     private static CDataBaseSystem myScissor = null;
 

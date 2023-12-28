@@ -128,6 +128,9 @@ public class Act_execute extends AppCompatActivity
         m_listView.setAdapter(m_Adapter);
         m_listView.setSelection(m_Adapter.getCount() - 1);
 
+        String strTablename = CDataBaseSystem.Instance().GetTableName();
+        strTablename = strTablename.replace("_tbl","");
+        m_lbTableName.setText(strTablename);
 
         myLayout.setOnTouchListener(new ConstraintLayout.OnTouchListener()
         {
@@ -175,7 +178,8 @@ public class Act_execute extends AppCompatActivity
         m_nHapValue = intent.getIntExtra("Num1",0) + intent.getIntExtra("Num2",0);
 
 
-        m_lbTableName.setText(CDataBaseSystem.Instance().GetTableName());
+
+
         String strLastDataSelete    = "SELECT * FROM "+ CDataBaseSystem.Instance().GetTableName() +" ORDER BY ROWID DESC LIMIT 1;";
         Cursor clsCursor            = CDataBaseSystem.Instance().Select(strLastDataSelete);
 
