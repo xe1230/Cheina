@@ -12,16 +12,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.example.chelina.DataBase.CConfigulation;
 import com.example.chelina.DataBase.CDataBaseSystem;
 
 import java.util.ArrayList;
 
 public class Act_SelectionCourse extends AppCompatActivity
 {
-    private ListView            m_listView;
-    private ArrayList<String>   m_list_str = new ArrayList<>();
-    private ArrayAdapter        m_adapter;
-
+    private ListView            m_listView  = null;
+    private ArrayList<String>   m_list_str  = new ArrayList<>();
+    private ArrayAdapter        m_adapter   = null;
+    private CConfigulation      m_clsConfigulation = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -31,15 +33,12 @@ public class Act_SelectionCourse extends AppCompatActivity
         getSupportActionBar().hide();
 
         m_listView = findViewById(R.id.list_view);
-
         m_listView.setChoiceMode(m_listView.CHOICE_MODE_SINGLE);
 
-        m_adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, m_list_str);
-
+        m_adapter           = new ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, m_list_str);
+        m_clsConfigulation  = (CConfigulation) getApplication();
         m_listView.setAdapter(m_adapter);
         m_listView.setSelection(m_adapter.getCount() - 1);
-        m_listView.setItemChecked(3,true);
-
 
         m_listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -47,31 +46,38 @@ public class Act_SelectionCourse extends AppCompatActivity
             public void onItemClick(AdapterView<?> adapterView, View view, int nRowIdx, long lID)
             {
                 CDataBaseSystem.Instance().UseTable(m_list_str.get(nRowIdx));
+
             }
         });
 
         String sql = "SELECT name FROM sqlite_master WHERE type IN ('table', 'view') AND name LIKE '%_tbl' UNION ALL SELECT name FROM sqlite_temp_master WHERE type IN ('table', 'view') ORDER BY 1;";
-
         Cursor cursor = CDataBaseSystem.Instance().Select(sql);
+
+        int nSelectedIdx    = 0;
+        int nCnt            = 0;
 
         while(cursor.moveToNext())
         {
             String strTableName = cursor.getString(0);
+
+            if (strTableName == CDataBaseSystem.Instance().GetTableName())
+            {
+                nSelectedIdx = nCnt;
+            }
+
             strTableName = strTableName.replace("_tbl","");
 
             m_list_str.add(strTableName);
+            nCnt++;
         }
 
+        m_listView.setItemChecked(nSelectedIdx,true);
         m_adapter.notifyDataSetChanged();
     }
 
     /* ----------------------------------------------------------------------------- */
     // Private Function
     /* ----------------------------------------------------------------------------- */
-//    private void CrateTable(String strName)
-//    {
-//        m_db.execSQL("CREATE TABLE IF NOT EXISTS "+ strName +"(_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text)");
-//    }
 
     /* ----------------------------------------------------------------------------- */
     // Protected Function

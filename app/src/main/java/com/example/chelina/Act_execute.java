@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,7 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.chelina.DataBase.CConfigulation;
+import com.example.chelina.DataBase.CDataBaseSystem;
 import com.example.chelina.Recipe.CRecordData;
 import com.example.chelina.Recipe.ListView_Adapter;
 import com.example.chelina.Recipe.ListView_Item;
@@ -81,24 +82,25 @@ public class Act_execute extends AppCompatActivity
     // Variable
     /* ----------------------------------------------------------------------------- */
 
-    private Thread              m_Thrtime       = null;
-    private Button              m_BtnStart      = null;
-    private TextView            mTimeTextView   = null;
-    private EditText m_editTitle = null;
-    private ListView m_listView = null;
+    private Thread                      m_Thrtime       = null;
+    private Button                      m_BtnStart      = null;
+    private TextView                    m_lbTableName   = null;
+    private TextView                    mTimeTextView   = null;
+    private EditText                    m_editTitle     = null;
+    private ListView                    m_listView      = null;
+    private InputMethodManager          m_MngInput      = null;
 
-    private InputMethodManager  m_MngInput      = null;
-    private Boolean             m_bRunning      = true;
-    private Boolean             m_bStarted      = false;
+    private Boolean                     m_bRunning      = true;
+    private Boolean                     m_bStarted      = false;
 
-    private boolean             m_bMemoClicked  = false;
-    private CRecordData         clsRecordData   = null;
-    private int                 m_nHapValue     = 0;
+    private boolean                     m_bMemoClicked  = false;
+    private CRecordData                 clsRecordData   = null;
+    private int                         m_nHapValue     = 0;
 
-    private ListView_Adapter m_Adapter = null;
-    private ArrayList<ListView_Item> m_ListViewitems = null;
-    private int             nDifficultIdx = 0;
-    private SQLiteDatabase  m_db;
+    private ListView_Adapter            m_Adapter       = null;
+    private ArrayList<ListView_Item>    m_ListViewitems = null;
+    private int                         nDifficultIdx = 0;
+
     /* ----------------------------------------------------------------------------- */
     // Properties Function
     /* ----------------------------------------------------------------------------- */
@@ -117,13 +119,14 @@ public class Act_execute extends AppCompatActivity
         ConstraintLayout myLayout = (ConstraintLayout)findViewById(R.id.Clo_Main);
 
         m_BtnStart          = (Button) findViewById(R.id.btn_Start);
+        m_lbTableName       = (TextView) findViewById(R.id.lb_TableName);
         mTimeTextView       = (TextView) findViewById(R.id.timeView);
         m_editTitle         = (EditText) findViewById(R.id.edit_Title);
         m_listView          = (ListView) findViewById(R.id.lv_Main);
         m_ListViewitems     = new ArrayList<ListView_Item>();
         m_MngInput          = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        m_Adapter           = new ListView_Adapter(this, m_ListViewitems);
 
-        m_Adapter = new ListView_Adapter(this, m_ListViewitems);
         m_listView.setAdapter(m_Adapter);
         m_listView.setSelection(m_Adapter.getCount() - 1);
 
@@ -170,9 +173,28 @@ public class Act_execute extends AppCompatActivity
         Intent intent = getIntent();
         m_nHapValue = intent.getIntExtra("Num1",0) + intent.getIntExtra("Num2",0);
 
-//        m_db = openOrCreateDatabase(CConfigulation.DEF_DATABATE_NAME, MODE_PRIVATE,null);
 
-//        CrateTable(CConfigulation.strTableName);
+        m_lbTableName.setText(CDataBaseSystem.Instance().GetTableName());
+        String strLastDataSelete    = "SELECT * FROM "+ CDataBaseSystem.Instance().GetTableName() +" ORDER BY ROWID DESC LIMIT 1;";
+        Cursor clsCursor            = CDataBaseSystem.Instance().Select(strLastDataSelete);
+
+        if (clsCursor != null)
+        {
+            if(clsCursor.moveToNext())
+            {
+                String strTime  = clsCursor.getString(1);
+                String strRefer = clsCursor.getString(2);
+                nDifficultIdx   = clsCursor.getInt(3);
+
+                _eDifficult[]   eDifficult      = _eDifficult.values();
+                int             nImgID          = getResources().getIdentifier(eDifficult[nDifficultIdx].toString(), "drawable", getPackageName());
+                ListView_Item clsListViewItem   = new ListView_Item(strTime, strRefer, nImgID, nDifficultIdx);
+
+                AddListViewItem(clsListViewItem);
+            }
+        }
+
+
     }
 
 
@@ -215,8 +237,6 @@ public class Act_execute extends AppCompatActivity
             int mSec = msg.arg1 % 100;
             int sec = (msg.arg1 / 100) % 60;
             int min = (msg.arg1 / 100) / 60;
-//            int hour = (msg.arg1 / 100) / 360;
-
 
             @SuppressLint("DefaultLocale")
             String result = String.format("%02d:%02d.%02d", min, sec, mSec);
@@ -242,7 +262,6 @@ public class Act_execute extends AppCompatActivity
 
     private void HideKeyboard()
     {
-
         if (m_bMemoClicked)
         {
 
@@ -253,28 +272,24 @@ public class Act_execute extends AppCompatActivity
 
     }
 
-    private void CrateTable(String strName)
-    {
-        m_db.execSQL("CREATE TABLE IF NOT EXISTS "+ strName +"(_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text)");
-    }
 
     public void InsertDB(ListView_Item clsListViewItem, String strTitle)
     {
         String strQuery = "";
 
-//        strQuery = "INSERT INTO " + CConfigulation.strTableName + "(record_time, reference_txt, ImageIdx_n, Titel_text) " +
-//                "VAlUES('" + clsListViewItem.getTime() + "','" + clsListViewItem.getReference() + "', " + clsListViewItem.getImageIdx() + " , '"+strTitle + "')";
+        strQuery = "INSERT INTO " + CDataBaseSystem.Instance().GetTableName() + "(record_time, reference_txt, ImageIdx_n, Titel_text) " +
+                "VAlUES('" + clsListViewItem.getTime() + "','" + clsListViewItem.getReference() + "', " + clsListViewItem.getImageIdx() + " , '"+strTitle + "')";
+        CDataBaseSystem.Instance().ExcuteQuery(strQuery);
 
-//        m_db.execSQL(strQuery);
     }
 
     public void DeleteDB()
     {
         String strQuery = "";
 
-//        strQuery = "DELETE FROM " + CConfigulation.strTableName + " WHERE ROWID IN (SELECT ROWID FROM Interval_tbl ORDER BY ROWID DESC LIMIT 1)";
+        strQuery = "DELETE FROM " + CDataBaseSystem.Instance().GetTableName() + " WHERE ROWID IN (SELECT ROWID FROM Interval_tbl ORDER BY ROWID DESC LIMIT 1)";
 
-//        m_db.execSQL(strQuery);
+        CDataBaseSystem.Instance().ExcuteQuery(strQuery);
     }
     /* ----------------------------------------------------------------------------- */
     // Protected Function
@@ -335,11 +350,11 @@ public class Act_execute extends AppCompatActivity
                 @Override
                 public void onClick(DialogInterface dialog, int pos)
                 {
-                    Resources       res             = getResources();
+
                     _eDifficult[]   eDifficult      = _eDifficult.values();
                     String          strTime         = mTimeTextView.getText().toString();
                     String          strRefer        = edittext.getText().toString();
-                    int             nImgID          = res.getIdentifier(eDifficult[nDifficultIdx].toString(), "drawable", getPackageName());
+                    int             nImgID          = getResources().getIdentifier(eDifficult[nDifficultIdx].toString(), "drawable", getPackageName());
                     ListView_Item clsListViewItem   = new ListView_Item(strTime, strRefer, nImgID, nDifficultIdx);
 
                     AddListViewItem(clsListViewItem);
