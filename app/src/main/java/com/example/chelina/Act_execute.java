@@ -145,11 +145,11 @@ public class Act_execute extends AppCompatActivity
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
             {
                 ListView_Item item = (ListView_Item) adapterView.getItemAtPosition(position);
+                String strRefer = item.getReference();
+                int nDifIdx = item.getImageIdx();
 
                 m_nMemberID = m_InitMemberId + position;
-                String title = item.getReference();
-                int nDifIdx = item.getImageIdx();
-                AlertDialogShow(title, nDifIdx, false);
+                AlertDialogShow(item.GetTitle(),strRefer, nDifIdx, false);
             }
         });
 
@@ -187,10 +187,11 @@ public class Act_execute extends AppCompatActivity
                 String strTime  = clsCursor.getString(1);
                 String strRefer = clsCursor.getString(2);
                 m_nDifficultIdx = clsCursor.getInt(3);
+                String strTitle = clsCursor.getString(4);
 
                 _eDifficult[]   eDifficult      = _eDifficult.values();
                 int             nImgID          = getResources().getIdentifier(eDifficult[m_nDifficultIdx].toString(), "drawable", getPackageName());
-                ListView_Item clsListViewItem   = new ListView_Item(strTime, strRefer, nImgID, m_nDifficultIdx);
+                ListView_Item clsListViewItem   = new ListView_Item(strTime, strRefer, nImgID, m_nDifficultIdx, strTitle);
 
                 AddListViewItem(clsListViewItem);
             }
@@ -302,7 +303,7 @@ public class Act_execute extends AppCompatActivity
         CDataBaseSystem.Instance().ExcuteQuery(strQuery);
     }
 
-    private void AlertDialogShow(String strText, int nDifficultImgIdx, boolean bCreate)
+    private void AlertDialogShow(String strTitle, String strText, int nDifficultImgIdx, boolean bCreate)
     {
         final EditText      editText    = new EditText(this);
         final String[]      strItems    = _eDifficult.getNames();
@@ -321,7 +322,6 @@ public class Act_execute extends AppCompatActivity
 //                            Toast.makeText(getApplicationContext(),"" + strItems[which],Toast.LENGTH_SHORT).show();
                     }
                 });
-
         dlg.setNeutralButton("닫기",null);
         dlg.setPositiveButton("저장",new DialogInterface.OnClickListener()
         {
@@ -332,7 +332,7 @@ public class Act_execute extends AppCompatActivity
                 String          strTime         = mTimeTextView.getText().toString();
                 String          strRefer        = editText.getText().toString();
                 int             nImgID          = getResources().getIdentifier(eDifficult[m_nDifficultIdx].toString(), "drawable", getPackageName());
-                ListView_Item   clsListViewItem = new ListView_Item(strTime, strRefer, nImgID, m_nDifficultIdx);
+                ListView_Item   clsListViewItem = new ListView_Item(strTime, strRefer, nImgID, m_nDifficultIdx, m_editTitle.getText().toString());
 
                 if (bCreate)
                 {
@@ -388,7 +388,7 @@ public class Act_execute extends AppCompatActivity
             m_bStarted = false;
 
 
-            AlertDialogShow(null, m_nDifficultIdx,true);
+            AlertDialogShow("Check Level",null, m_nDifficultIdx,true);
         }
     }
 

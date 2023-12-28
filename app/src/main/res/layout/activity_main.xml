@@ -31,12 +31,12 @@
 
     <TextView
         android:id="@+id/edit_moto"
-        android:layout_width="315dp"
-        android:layout_height="131dp"
+        android:layout_width="312dp"
+        android:layout_height="162dp"
         android:layout_marginStart="48dp"
         android:layout_marginTop="240dp"
         android:fontFamily="@font/fontstyle"
-        android:text="Win a better life \nby doing your best"
+        android:text="Win a better life \nby doing your best \n -Chelina-"
         android:textAlignment="center"
         android:textSize="36sp"
         app:layout_constraintStart_toStartOf="parent"
