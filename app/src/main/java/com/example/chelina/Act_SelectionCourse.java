@@ -36,11 +36,11 @@ public class Act_SelectionCourse extends AppCompatActivity
         setContentView(R.layout.frm_selection_course);
         getSupportActionBar().hide();
 
-        m_listView = findViewById(R.id.list_view);
-        m_listView.setChoiceMode(m_listView.CHOICE_MODE_SINGLE);
+        m_listView          = findViewById(R.id.list_view);
+        m_adapter           = new ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, m_list_str);
+        m_clsConfigulation  = (CConfigulation) getApplication();
 
-        m_adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, m_list_str);
-        m_clsConfigulation = (CConfigulation) getApplication();
+        m_listView.setChoiceMode(m_listView.CHOICE_MODE_SINGLE);
         m_listView.setAdapter(m_adapter);
         m_listView.setSelection(m_adapter.getCount() - 1);
 
@@ -50,7 +50,6 @@ public class Act_SelectionCourse extends AppCompatActivity
             public void onItemClick(AdapterView<?> adapterView, View view, int nRowIdx, long lID)
             {
                 CDataBaseSystem.Instance().UseTable(m_list_str.get(nRowIdx));
-
             }
         });
 

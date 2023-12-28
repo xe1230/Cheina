@@ -269,7 +269,6 @@ public class Act_execute extends AppCompatActivity
             this.getWindow().getDecorView().clearFocus();
             m_bMemoClicked = false;
         }
-
     }
 
 

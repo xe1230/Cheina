@@ -76,6 +76,8 @@ public class CConfigulation extends Application
             Log.i("Dean IO exception)",e.getMessage());
             e.printStackTrace();
         }
+
+
     }
 
     private JSONObject CreateJson()
