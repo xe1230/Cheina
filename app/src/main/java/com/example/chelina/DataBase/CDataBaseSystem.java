@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.chelina.Recipe.ListView_Item;
+
 
 public class CDataBaseSystem
 {
@@ -23,11 +25,9 @@ public class CDataBaseSystem
     }
 
     private String          m_strTableName = "Chelina_tbl";
-
     private SQLiteDatabase  m_db            = null;
     private CDBHelper       m_clsDBHelper   = null;
     private boolean         m_bInstance     = false;
-
 
     private CDataBaseSystem()
     {
@@ -75,6 +75,7 @@ public class CDataBaseSystem
     {
        return  m_db.rawQuery(strQuery,null);
     }
+
 
     public boolean ExcuteQuery(String strQuery)
     {

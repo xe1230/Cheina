@@ -45,11 +45,6 @@
 
 </manifest>
 
-<!--TODO:  Showing last data
-           add created time in table
-           Complite Database Singleton
-           JSon
-           load last data
-
-
+<!--TODO:
+           Loading Last Data
            communictation TCPIP -->

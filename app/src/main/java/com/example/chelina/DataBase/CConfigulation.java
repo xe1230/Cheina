@@ -85,13 +85,10 @@ public class CConfigulation extends Application
 
         try
         {
-
             jsonObject.put("tbl", strCurrentDBTbl);
-//            jsonObject.put("nombre", getNombre());
-//            jsonObject.put("precio", getPrecio());
 
-
-        } catch (JSONException e)
+        }
+        catch (JSONException e)
         {
             e.printStackTrace();
         }

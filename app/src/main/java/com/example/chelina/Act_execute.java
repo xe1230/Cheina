@@ -6,9 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -81,26 +79,26 @@ public class Act_execute extends AppCompatActivity
     /* ----------------------------------------------------------------------------- */
     // Variable
     /* ----------------------------------------------------------------------------- */
+    private Thread                      m_Thrtime           = null;
+    private Button                      m_BtnStart          = null;
+    private TextView                    m_lbTableName       = null;
+    private TextView                    mTimeTextView       = null;
+    private EditText                    m_editTitle         = null;
+    private ListView                    m_listView          = null;
+    private InputMethodManager          m_MngInput          = null;
 
-    private Thread                      m_Thrtime       = null;
-    private Button                      m_BtnStart      = null;
-    private TextView                    m_lbTableName   = null;
-    private TextView                    mTimeTextView   = null;
-    private EditText                    m_editTitle     = null;
-    private ListView                    m_listView      = null;
-    private InputMethodManager          m_MngInput      = null;
+    private boolean                     m_bRunning          = true;
+    private boolean                     m_bStarted          = false;
 
-    private Boolean                     m_bRunning      = true;
-    private Boolean                     m_bStarted      = false;
+    private boolean                     m_bMemoClicked      = false;
+    private CRecordData                 clsRecordData       = null;
+    private int                         m_nHapValue         = 0;
 
-    private boolean                     m_bMemoClicked  = false;
-    private CRecordData                 clsRecordData   = null;
-    private int                         m_nHapValue     = 0;
-
-    private ListView_Adapter            m_Adapter       = null;
-    private ArrayList<ListView_Item>    m_ListViewitems = null;
-    private int                         nDifficultIdx = 0;
-
+    private ListView_Adapter            m_Adapter           = null;
+    private ArrayList<ListView_Item>    m_ListViewitems     = null;
+    private int                         m_nDifficultIdx     = 0;
+    private int                         m_InitMemberId      = 0;
+    private int                         m_nMemberID         = 0;
     /* ----------------------------------------------------------------------------- */
     // Properties Function
     /* ----------------------------------------------------------------------------- */
@@ -148,7 +146,10 @@ public class Act_execute extends AppCompatActivity
             {
                 ListView_Item item = (ListView_Item) adapterView.getItemAtPosition(position);
 
-                String title = item.getTime();
+                m_nMemberID = m_InitMemberId + position;
+                String title = item.getReference();
+                int nDifIdx = item.getImageIdx();
+                AlertDialogShow(title, nDifIdx, false);
             }
         });
 
@@ -182,29 +183,23 @@ public class Act_execute extends AppCompatActivity
         {
             if(clsCursor.moveToNext())
             {
+                m_InitMemberId  = clsCursor.getInt(0);
                 String strTime  = clsCursor.getString(1);
                 String strRefer = clsCursor.getString(2);
-                nDifficultIdx   = clsCursor.getInt(3);
+                m_nDifficultIdx = clsCursor.getInt(3);
 
                 _eDifficult[]   eDifficult      = _eDifficult.values();
-                int             nImgID          = getResources().getIdentifier(eDifficult[nDifficultIdx].toString(), "drawable", getPackageName());
-                ListView_Item clsListViewItem   = new ListView_Item(strTime, strRefer, nImgID, nDifficultIdx);
+                int             nImgID          = getResources().getIdentifier(eDifficult[m_nDifficultIdx].toString(), "drawable", getPackageName());
+                ListView_Item clsListViewItem   = new ListView_Item(strTime, strRefer, nImgID, m_nDifficultIdx);
 
                 AddListViewItem(clsListViewItem);
             }
         }
-
-
     }
-
-
-
 
     /* ----------------------------------------------------------------------------- */
     // Event
     /* ----------------------------------e------------------------------------------- */
-
-
     @Override public void onConfigurationChanged(Configuration newConfig)
     {
         super.onConfigurationChanged(newConfig);
@@ -214,7 +209,6 @@ public class Act_execute extends AppCompatActivity
         if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
         {//세로 전환시
             Log.d("onConfigurationChanged" , "Configuration.ORIENTATION_PORTRAIT");
-
 //            RecordDataRefresh();
         }
         else if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
@@ -260,11 +254,17 @@ public class Act_execute extends AppCompatActivity
     }
 
 
+    private void UpdateListViewItem(int nListIdx, ListView_Item clsListViewItem)
+    {
+        m_ListViewitems.set(nListIdx,clsListViewItem);
+        m_Adapter.notifyDataSetChanged();
+    }
+
+
     private void HideKeyboard()
     {
         if (m_bMemoClicked)
         {
-
             m_MngInput.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             this.getWindow().getDecorView().clearFocus();
             m_bMemoClicked = false;
@@ -278,9 +278,20 @@ public class Act_execute extends AppCompatActivity
         String strQuery = "";
 
         strQuery = "INSERT INTO " + CDataBaseSystem.Instance().GetTableName() + "(record_time, reference_txt, ImageIdx_n, Titel_text) " +
-                "VAlUES('" + clsListViewItem.getTime() + "','" + clsListViewItem.getReference() + "', " + clsListViewItem.getImageIdx() + " , '"+strTitle + "')";
+                "VAlUES('" + clsListViewItem.getTime() + "','" + clsListViewItem.getReference() + "', " + clsListViewItem.getImageIdx() + " , '" + strTitle + "')";
         CDataBaseSystem.Instance().ExcuteQuery(strQuery);
+    }
 
+
+    public void UpdateDB(ListView_Item clsListViewItem, String strTitle, int nDataID)
+    {
+        String strQuery = "";
+
+        strQuery = "UPDATE " + CDataBaseSystem.Instance().GetTableName() + " SET " +
+                "reference_txt = '"+ clsListViewItem.getReference()+"' , " +
+                "ImageIdx_n = " + Integer.toString(clsListViewItem.getImageIdx()) +
+                " WHERE _id = " +  Integer.toString(nDataID) ;
+        CDataBaseSystem.Instance().ExcuteQuery(strQuery);
     }
 
     public void DeleteDB()
@@ -290,6 +301,56 @@ public class Act_execute extends AppCompatActivity
         strQuery = "DELETE FROM " + CDataBaseSystem.Instance().GetTableName() + " WHERE ROWID IN (SELECT ROWID FROM Interval_tbl ORDER BY ROWID DESC LIMIT 1)";
 
         CDataBaseSystem.Instance().ExcuteQuery(strQuery);
+    }
+
+    private void AlertDialogShow(String strText, int nDifficultImgIdx, boolean bCreate)
+    {
+        final EditText      editText    = new EditText(this);
+        final String[]      strItems    = _eDifficult.getNames();
+        AlertDialog.Builder dlg         = new AlertDialog.Builder(this).setCancelable(false);
+
+        editText.setText(strText);
+
+        dlg.setTitle("Check Level");
+        dlg.setView(editText);
+        dlg.setSingleChoiceItems(strItems, nDifficultImgIdx,
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        m_nDifficultIdx = which;
+//                            Toast.makeText(getApplicationContext(),"" + strItems[which],Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        dlg.setNeutralButton("닫기",null);
+        dlg.setPositiveButton("저장",new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int pos)
+            {
+                _eDifficult[]   eDifficult      = _eDifficult.values();
+                String          strTime         = mTimeTextView.getText().toString();
+                String          strRefer        = editText.getText().toString();
+                int             nImgID          = getResources().getIdentifier(eDifficult[m_nDifficultIdx].toString(), "drawable", getPackageName());
+                ListView_Item   clsListViewItem = new ListView_Item(strTime, strRefer, nImgID, m_nDifficultIdx);
+
+                if (bCreate)
+                {
+                    AddListViewItem(clsListViewItem);
+                    InsertDB(clsListViewItem, m_editTitle.getText().toString());
+                }
+                else
+                {
+                    UpdateListViewItem( m_nMemberID - m_InitMemberId ,clsListViewItem);
+                    UpdateDB(clsListViewItem,m_editTitle.getText().toString(),m_nMemberID);
+                }
+
+                HideKeyboard();
+            }
+        });
+
+        dlg.show();
     }
     /* ----------------------------------------------------------------------------- */
     // Protected Function
@@ -327,45 +388,8 @@ public class Act_execute extends AppCompatActivity
             m_BtnStart.setText("START");
             m_bStarted = false;
 
-            final EditText edittext = new EditText(this);
-            final String[] strItems = _eDifficult.getNames();
 
-            AlertDialog.Builder dlg = new AlertDialog.Builder(this).setCancelable(false);
-            dlg.setTitle("Check Level");
-            dlg.setView(edittext);
-            dlg.setSingleChoiceItems( strItems,nDifficultIdx,
-                    new DialogInterface.OnClickListener()
-                    {
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            nDifficultIdx = which;
-//                            Toast.makeText(getApplicationContext(),"" + strItems[which],Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-
-            dlg.setNeutralButton("닫기",null);
-            dlg.setPositiveButton("저장",new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int pos)
-                {
-
-                    _eDifficult[]   eDifficult      = _eDifficult.values();
-                    String          strTime         = mTimeTextView.getText().toString();
-                    String          strRefer        = edittext.getText().toString();
-                    int             nImgID          = getResources().getIdentifier(eDifficult[nDifficultIdx].toString(), "drawable", getPackageName());
-                    ListView_Item clsListViewItem   = new ListView_Item(strTime, strRefer, nImgID, nDifficultIdx);
-
-                    AddListViewItem(clsListViewItem);
-                    InsertDB(clsListViewItem, m_editTitle.getText().toString());
-
-                    HideKeyboard();
-                }
-            });
-
-            dlg.show();
-
+            AlertDialogShow(null, m_nDifficultIdx,true);
         }
     }
 
