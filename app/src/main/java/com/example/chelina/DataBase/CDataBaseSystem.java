@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class CDataBaseSystem
 {
-    public static final String DEF_DATABATE_NAME = "Chelina_DB";
-
+    public static final String  DEF_DATABATE_NAME = "Chelina_DB";
+    private static final String DEF_STR_CreatedQuery = "(_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 
     private static CDataBaseSystem myScissor = null;
 
@@ -28,6 +28,7 @@ public class CDataBaseSystem
     private CDBHelper       m_clsDBHelper;
     private boolean         m_bInstance = false;
 
+
     private CDataBaseSystem()
     {
 
@@ -40,10 +41,15 @@ public class CDataBaseSystem
             m_clsDBHelper = new CDBHelper(context);
 
             m_db = m_clsDBHelper.getWritableDatabase();
-            m_db.execSQL("CREATE TABLE IF NOT EXISTS Chelina_tbl(_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text)");
+            m_db.execSQL("CREATE TABLE IF NOT EXISTS Chelina_tbl" + DEF_STR_CreatedQuery);
 
             m_bInstance = true;
         }
+    }
+
+    public String GetTableName()
+    {
+        return m_strTableName;
     }
 
     public void UseTable(String strTableName)
@@ -58,15 +64,35 @@ public class CDataBaseSystem
 
         if (m_bInstance)
         {
-            m_db.execSQL("CREATE TABLE IF NOT EXISTS "+ strName + "_tbl (_id integer PRIMARY KEY AUTOINCREMENT, record_time time, reference_txt text, ImageIdx_n int, Titel_text text)");
+            m_db.execSQL("CREATE TABLE IF NOT EXISTS "+ strName + "_tbl" + DEF_STR_CreatedQuery );
             bReturn = true;
         }
 
         return bReturn;
-      }
+    }
 
     public Cursor Select(String strQuery)
     {
-       return m_db.rawQuery(strQuery,null);
+       return  m_db.rawQuery(strQuery,null);
     }
+
+    public boolean ExcuteQuery(String strQuery)
+    {
+        boolean bReturn = false;
+
+        try
+        {
+            m_db.execSQL(strQuery);
+            bReturn = true;
+        }
+        catch (RuntimeException ex)
+        {
+
+        }
+
+       return bReturn;
+    }
+
 }
+
+// TODO why SQLiteDatabase needs the Context class
