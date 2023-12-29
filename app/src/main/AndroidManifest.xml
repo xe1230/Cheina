@@ -12,10 +12,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Chelina"
-        android:name=".DataBase.CConfigulation"
+        android:name=".DataBase.CChelinaApp"
         tools:targetApi="31">
         <activity
-            android:name=".Act_SelectionCourse"
+            android:name=".Act_Course"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -38,6 +38,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <activity
             android:name=".Act_execute"
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden" />
@@ -45,6 +46,9 @@
 
 </manifest>
 
-<!--TODO:   Loading Last Data
-           NDK
-           Next version communictation TCPIP -->
+<!--TODO:  modify android:layout_width size
+            moving back ground
+           load last data
+            NDK
+
+           communictation TCPIP -->

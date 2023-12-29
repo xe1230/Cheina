@@ -177,9 +177,6 @@ public class Act_execute extends AppCompatActivity
         Intent intent = getIntent();
         m_nHapValue = intent.getIntExtra("Num1",0) + intent.getIntExtra("Num2",0);
 
-
-
-
         String strLastDataSelete    = "SELECT * FROM "+ CDataBaseSystem.Instance().GetTableName() +" ORDER BY ROWID DESC LIMIT 1;";
         Cursor clsCursor            = CDataBaseSystem.Instance().Select(strLastDataSelete);
 
@@ -379,7 +376,7 @@ public class Act_execute extends AppCompatActivity
     {
         if (!m_bStarted)
         {
-            m_BtnStart.setText("STOP");
+            m_BtnStart.setText("BREAK");
             m_bStarted = true;
             m_Thrtime = new Thread(new timeThread());
             m_Thrtime.start();

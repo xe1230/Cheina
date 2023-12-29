@@ -3,21 +3,14 @@ package com.example.chelina;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.chelina.DataBase.CDataBaseSystem;
 import com.example.chelina.Recipe.CRecordData;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -103,7 +96,7 @@ public class MainActivity extends AppCompatActivity
     /* ----------------------------------------------------------------------------- */
     public void btn_openCourse_onClick(View view)
     {
-        Intent intent = new Intent(getApplicationContext(),Act_SelectionCourse.class);
+        Intent intent = new Intent(getApplicationContext(), Act_Course.class);
 //        CRecordData data = new CRecordData(100, m_editRecord.getText().toString());
 //        intent.putExtra("data", data);
 //        startActivityForResult(intent, REQUEST_CODE_MENU);

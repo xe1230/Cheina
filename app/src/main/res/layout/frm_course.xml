@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/eagle_nebula"
+    tools:context=".Act_Course">
+
+    <ImageButton
+        android:id="@+id/btn_Back"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="#FF7700"
+        android:onClick="btn_Back_onClick"
+        android:src="@drawable/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_Add"
+        android:layout_width="204dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="484dp"
+        android:onClick="btn_Add_onClick"
+        android:text="Add"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_Delete"
+        android:layout_width="199dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="484dp"
+        android:onClick="btn_Delete_onClick"
+        android:text="Delete"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="413dp"
+        android:layout_height="408dp"
+        android:layout_marginTop="52dp"
+
+        android:background="@color/white"
+        android:textColor="@color/purple_700"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <!--        android:backgroundTint="#ffffff"-->
+<!--    android:textColor="#FF7700"
+  android:textColor = "@color/white"
+
+          android:foreground="#FF7700"-->
+</androidx.constraintlayout.widget.ConstraintLayout>

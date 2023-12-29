@@ -4,25 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/Clo_Main"
     android:layout_width="match_parent"
-
+    android:background="@drawable/eagle_nebula"
 
     android:layout_height="match_parent"
     tools:context=".Act_execute">
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_Back"
         android:layout_width="52dp"
         android:layout_height="52dp"
+        android:background="#FF7700"
         android:onClick="btn_Back_onClick"
-        android:text="B"
+        android:src="@drawable/back"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/lb_TableName"
         android:layout_width="355dp"
         android:layout_height="32dp"
-
+        android:backgroundTint="#00000000"
+        android:textColor="#FF7700"
         android:layout_marginEnd="2dp"
         android:text="TextView"
         android:textAlignment="textEnd"
@@ -35,15 +37,16 @@
         android:layout_width="match_parent"
         android:layout_height="65dp"
         android:layout_marginTop="124dp"
-        android:text="TextView"
-
+        android:text="00:00.00"
         android:textAlignment="center"
         android:textSize="50sp"
+        android:textColor="#FF7700"
+        android:backgroundTint="#00000000"
+        android:fontFamily="@font/fontstyle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 
     <Button
@@ -52,8 +55,12 @@
         android:layout_height="147dp"
         android:layout_marginStart="80dp"
         android:layout_marginTop="208dp"
+        android:backgroundTint="#FF7700"
+        android:fontFamily="@font/fontstyle"
         android:onClick="btn_Start_onClick"
         android:text="Start"
+
+        android:textSize="48sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,8 +69,11 @@
         android:id="@+id/btn_Cancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="#FF7700"
+        android:fontFamily="@font/fontstyle"
         android:onClick="btn_Cancel_onClick"
         android:text="Cancel"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -74,6 +84,7 @@
         android:layout_width="269dp"
         android:layout_height="51dp"
         android:layout_marginTop="52dp"
+        android:textColor="#FF7700"
         android:text="Memo"
         android:textSize="22dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,6 +98,8 @@
         android:text="기록"
         android:textAlignment="center"
         android:textSize="30dp"
+        android:backgroundTint="#00000000"
+        android:textColor="#FF7700"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -97,6 +110,7 @@
         android:layout_width="match_parent"
         android:layout_height="287dp"
         android:layout_marginTop="396dp"
+        android:backgroundTint="#00000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
